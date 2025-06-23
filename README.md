@@ -25,6 +25,8 @@ advancements, or enchantments.
 
 ## EnderASM
 
+![EnderASM Logo](./images/enderasm_logo1024.png)
+
 EnderASM is an assembly language, designed to be assembled to Minecraft commands and run as an
 MCFunction in Minecraft datapack.
 
@@ -33,6 +35,8 @@ The file extension for EnderASM source files is `.s`.
 See [EnderASM Examples](./examples_enderasm/).
 
 ## EnderC
+
+![EnderC Logo](./images/enderc_logo1024.png)
 
 EnderC is a C-like programming language, designed to be compiled to Minecraft commands and run as
 an MCFunction in Minecraft datapack.
