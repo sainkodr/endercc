@@ -30,7 +30,7 @@ MCFunction in Minecraft datapack.
 
 The file extension for EnderASM source files is `.s`.
 
-See [EnderASM Examples](./enderasm_examples/).
+See [EnderASM Examples](./examples_enderasm/).
 
 ## EnderC
 
