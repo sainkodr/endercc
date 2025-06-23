@@ -123,8 +123,6 @@ i32 main(i32 argc, char *argv[])
   /************************************/
   /*-------/  READ ARGUMENTS  \-------*/
   /************************************/
-  
-  es_add_comment_for_every_label = 1; /* TODO: -l add label comments option */
 
   if (argc < 2 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
   {
@@ -137,7 +135,9 @@ i32 main(i32 argc, char *argv[])
            "  -o <directory>           Or\n"
            "  --output <directory>     Place the output into <directory>.\n"
            "  -p <string>              Or\n"
-           "  --prefix <string>        Define namespace and subfolders for mcfunctions.\n"
+           "  --prefix <string>        Define namespace and subfolders for mcfunctions.\n");
+    printf("  -l                       Or\n"
+           "  --label-comments         Generate a comment in place of each label.\n"
            "\n"
     );
     exit(EXIT_SUCCESS);
@@ -185,6 +185,10 @@ i32 main(i32 argc, char *argv[])
       }
 
       es_mcfunction_prefix = argv[k];
+    }
+    else if (strcmp(argv[k], "-l") == 0 || strcmp(argv[k], "--comment-labels") == 0)
+    {
+      es_add_comment_for_every_label = 1;
     }
     else
     {
