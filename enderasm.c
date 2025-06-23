@@ -143,9 +143,9 @@ i32 main(i32 argc, char *argv[])
     exit(EXIT_SUCCESS);
   }
   
-  if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--verssion") == 0)
+  if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.0\n"
+    printf("enderasm 1.0.1\n"
            "This is free and unencumbered software released into the public domain.\n\n");
     exit(EXIT_SUCCESS);
   }
@@ -684,12 +684,12 @@ u32 es_expression_parse_bp(u32 min_bp)
 void es_generate_branch(u32 type)
 {
   static const char *opcode_table[ES_JCOUNT] = { "<", "<=", "=", "=", ">", ">=" };
+  static const char *altsubcmds[ES_JCOUNT] = { "unless", "if", "if", "unless", "unless", "if" };
+  static const char *altformats[ES_JCOUNT] = { "%i..", "..%i", "%i", "%i", "..%i", "%i.." };
   
   const char *subcmd, *opcode;
   X_Token label_name;
   i32 arg1_i32, arg1_si, arg2_i32, arg2_si;
-  
-  /* TODO: use "matches" for ES_JE and ES_JNE */
   
   subcmd = (type == ES_JNE) ? "unless" : "if";
   opcode = opcode_table[type];
@@ -717,25 +717,29 @@ void es_generate_branch(u32 type)
     return;
   }
 
-  if (arg1_si < 0)
+  if (arg1_si >= 0 && arg2_si >= 0)
   {
-    fprintf(es_cmdout, "scoreboard players set %s0000 %s %i\n",
-      es_eternal_prefix, es_objective_name, arg1_i32);
-    arg1_si = 0;
-  }
-  
-  if (arg2_si < 0)
-  {
-    fprintf(es_cmdout, "scoreboard players set %s0000 %s %i\n",
-      es_eternal_prefix, es_objective_name, arg2_i32);
-    arg2_si = 0;
+    fprintf(es_cmdout, "execute %s score ", subcmd);
+    es_symbol_eternal_print_name(arg1_si);
+    fprintf(es_cmdout, " %s %s ", es_objective_name, opcode);
+    es_symbol_eternal_print_name(arg2_si);
+    fprintf(es_cmdout, " %s run ", es_objective_name);
+    es_generate_jump(label_name);
+    
+    return;
   }
 
-  fprintf(es_cmdout, "execute %s score ", subcmd);
+  if (arg1_si < 0) /* swap so arg1 is eternal and arg2 is constant */
+  {
+    arg1_si = arg2_si;
+    arg2_i32 = arg1_i32;
+  }
+  
+  fprintf(es_cmdout, "execute %s score ", altsubcmds[type]);
   es_symbol_eternal_print_name(arg1_si);
-  fprintf(es_cmdout, " %s %s ", es_objective_name, opcode);
-  es_symbol_eternal_print_name(arg2_si);
-  fprintf(es_cmdout, " %s run ", es_objective_name);
+  fprintf(es_cmdout, " %s matches ", es_objective_name);
+  fprintf(es_cmdout, altformats[type], arg2_i32);
+  fprintf(es_cmdout, " run ");
   es_generate_jump(label_name);
 }
 /*************************************************************************************************/
@@ -750,11 +754,6 @@ void es_generate_jump(X_Token label_name)
 void es_generate_operation(const char *opcode, const char *altcode, i32 stupid_bug)
 {
   i32 arg1_si, arg2_i32, arg2_si;
-  
-  (void) altcode;
-  (void) stupid_bug;
-  
-  /* TODO: use altcode and be aware of stupid_bug */
 
   es_instruction_argument(NULL, &arg1_si);
   x_expect(",");
@@ -763,6 +762,16 @@ void es_generate_operation(const char *opcode, const char *altcode, i32 stupid_b
 
   if (arg2_si < 0)
   {
+    if (altcode != NULL && !(stupid_bug && (u32)arg2_i32 == 0x80000000))
+    {
+      fprintf(es_cmdout, "scoreboard players %s ", altcode);
+      es_symbol_eternal_print_name(arg1_si);
+      fprintf(es_cmdout, " %s %i\n", es_objective_name, arg2_i32);
+      
+      fflush(es_cmdout);
+      return;
+    }
+  
     fprintf(es_cmdout, "scoreboard players set %s0000 %s %i\n", es_eternal_prefix,
       es_objective_name, arg2_i32);
     arg2_si = 0;
