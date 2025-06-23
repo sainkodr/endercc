@@ -3,9 +3,12 @@ LICENSE: See end of file for license information.
 BUILD: $ cc -std=c89 -pedantic -pedantic-errors -o enderasm enderasm.c
 USAGE: $ enderasm [options] <file.s>
 
+  PLAN FOR V1.1.0
 TODO: warning about unreachable code
-TODO: "print" pseudo instruction like "cmd" but generates "tellraw" automatically
+TODO: "print" pseudo-instruction like "cmd" but generates "tellraw" command automatically
 TODO: alias my_foo = "nmsp:foreign"
+TODO: arrays or/and pointers
+FIXME: "const" allow multiple declarations as in "eter" and "func" declarations
 **************************************************************************************************/
 /* HEADER                                                                                        */
 /*************************************************************************************************/
@@ -145,7 +148,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.2\n"
+    printf("enderasm 1.0.3\n"
            "This is free and unencumbered software released into the public domain.\n\n");
     exit(EXIT_SUCCESS);
   }
@@ -239,23 +242,12 @@ i32 main(i32 argc, char *argv[])
     {
       do
       {
-        X_Token name, quoted;
+        X_Token quoted;
         i32 si;
       
         /**/ if (x_accept("tellraw"))
         {
-          name = x_expect(" A");
-          si = es_symbol_find(name);
-          
-          if (si < 0)
-          {
-            x_msgf(X_FERR, name, "undefined symbol");
-          }
-          
-          if (es_symtab[si].st_kind != ES_SYM_ETERNAL)
-          {
-            x_msgf(X_FERR, name, "it is NOT an eternal variable");
-          }
+          es_instruction_argument(NULL, &si);
         
           fprintf(es_cmdout, "{\"score\":{\"name\":\"");
           es_symbol_eternal_print_name(si);
