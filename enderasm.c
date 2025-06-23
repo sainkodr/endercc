@@ -145,7 +145,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.1\n"
+    printf("enderasm 1.0.2\n"
            "This is free and unencumbered software released into the public domain.\n\n");
     exit(EXIT_SUCCESS);
   }
