@@ -25,7 +25,9 @@ advancements, or enchantments.
 
 ## EnderASM
 
-![EnderASM Logo](./images/enderasm_logo1024.png)
+<p align=center>
+  <img src="./images/enderasm_logo1024.png" alt="EnderASM Logo" width=400>
+</p>
 
 EnderASM is an assembly language, designed to be assembled to Minecraft commands and run as an
 MCFunction in Minecraft datapack.
@@ -36,7 +38,9 @@ See [EnderASM Examples](./examples_enderasm/).
 
 ## EnderC
 
-![EnderC Logo](./images/enderc_logo1024.png)
+<p align=center>
+  <img src="./images/enderc_logo1024.png" alt="EnderC Logo" width=400>
+</p>
 
 EnderC is a C-like programming language, designed to be compiled to Minecraft commands and run as
 an MCFunction in Minecraft datapack.
