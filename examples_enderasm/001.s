@@ -5,7 +5,7 @@ eter x // you must declare eternal variables before using them
 print_x5:
   mov x, 0
 loop:
-  cmd `tellraw @a "This message is printed 5 times!"`
+  tellraw "@a", "This message is printed 5 times!"
   add x, 1
   jl loop, x, 5 // if (x <= 5) goto loop;
   ret

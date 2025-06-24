@@ -12,6 +12,6 @@ call_me:
   ret
 
 print_x:
-  cmd `tellraw @a [`, tellraw x, `]`
+  tellraw "@a", "x = ", x
   ret
 

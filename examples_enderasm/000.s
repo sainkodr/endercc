@@ -2,6 +2,6 @@
 extern func load // mark the function as "used somewhere outside this source file"
 
 load: // generates load.mcfunction
-  cmd `tellraw @a "Hello, EnderASM!"` // '\n' is added automatically
+  tellraw "@a", "Hello, EnderASM!" // <= generates a tellraw command
   ret // <= for readability, enderasm ends the function instead of generating return command
 

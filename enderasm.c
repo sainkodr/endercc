@@ -5,9 +5,9 @@ USAGE: $ enderasm [options] <file.s>
 
   PLAN FOR V1.1.0
 TODO: warning about unreachable code
-TODO: "print" pseudo-instruction like "cmd" but generates "tellraw" command automatically
 TODO: alias my_foo = "nmsp:foreign"
 TODO: arrays or/and pointers
+TODO: call L as "selector" at "coords"
 **************************************************************************************************/
 /* HEADER                                                                                        */
 /*************************************************************************************************/
@@ -147,7 +147,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.4\n"
+    printf("enderasm 1.0.5\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -285,6 +285,58 @@ i32 main(i32 argc, char *argv[])
       
       
       fputc('\n', es_cmdout);
+      fflush(es_cmdout);
+    }
+    else if (x_accept("tellraw"))
+    {
+      char *data;
+      i32 size;
+      X_Token quoted;
+      
+      quoted = x_expect(" Q");
+      x_expect(",");
+    
+      size = 0;
+      data = x_decode(quoted, &size);
+      fprintf(es_cmdout, "tellraw %.*s [", size, data);
+    
+      for (;;)
+      {
+        if ((quoted = x_accept(" Q")))
+        {
+          size = 0;
+          data = x_decode(quoted, &size);
+          fprintf(es_cmdout, "{\"text\":\"%.*s\"}", size, data);
+        }
+        else
+        {
+          i32 constant_value, si;
+          
+          es_instruction_argument(&constant_value, &si);
+          
+          if (si < 0)
+          {
+            fprintf(es_cmdout, "{\"text\":\"%i\"}", (i32)constant_value);
+          }
+          else
+          {
+            fprintf(es_cmdout, "{\"score\":{\"name\":\"");
+            es_symbol_eternal_print_name(si);
+            fprintf(es_cmdout, "\",\"objective\":\"%s\"}}", es_objective_name);
+          }
+        }
+        
+        if (!x_accept(","))
+        {
+          break;
+        }
+        
+        fprintf(es_cmdout, ",");
+      }
+      
+      x_expect("\n");
+      
+      fprintf(es_cmdout, "]\n");
       fflush(es_cmdout);
     }
     else if (x_verify("extern") || x_verify("eter"))
