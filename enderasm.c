@@ -8,7 +8,6 @@ TODO: warning about unreachable code
 TODO: "print" pseudo-instruction like "cmd" but generates "tellraw" command automatically
 TODO: alias my_foo = "nmsp:foreign"
 TODO: arrays or/and pointers
-FIXME: "const" allow multiple declarations as in "eter" and "func" declarations
 **************************************************************************************************/
 /* HEADER                                                                                        */
 /*************************************************************************************************/
@@ -148,8 +147,9 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.3\n"
-           "This is free and unencumbered software released into the public domain.\n\n");
+    printf("enderasm 1.0.4\n"
+           "This is free and unencumbered software released into the public domain.\n"
+           "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
   }
   
@@ -356,10 +356,15 @@ i32 main(i32 argc, char *argv[])
     {
       i32 constant_value, si;
       
-      si = es_symbol_declare(ES_SYM_CONSTANT, ES_SYMF_DEFINED, x_expect(" A"));
-      x_expect("=");
-      es_instruction_argument(&constant_value, NULL);
-      es_symtab[si].st_value.as_i64 = constant_value;
+      do
+      {
+        si = es_symbol_declare(ES_SYM_CONSTANT, ES_SYMF_DEFINED, x_expect(" A"));
+        x_expect("=");
+        es_instruction_argument(&constant_value, NULL);
+        es_symtab[si].st_value.as_i64 = constant_value;
+      }
+      while (x_accept(","));
+      
       x_expect("\n");
     }
     else if (x_accept("call"))
