@@ -1,0 +1,18 @@
+/* 007.endc - What for? */
+enum {
+  START = 0,
+  END = 9
+};
+
+extern void test_for_loop()
+{
+  eter i, pow2;
+  
+  for (i = START; i <= END; ++i)
+  {
+    pow2 = i * i;
+  
+    tellraw("@a", i, " * ", i, " = ", pow2);
+  }
+}
+

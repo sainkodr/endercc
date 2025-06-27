@@ -1,0 +1,10 @@
+/* 009.endc - Raw commands */
+extern void test_cmd()
+{
+  eter x;
+
+  cmd("setblock 0 100 0 minecraft:dirt");
+  cmd("scoreboard players set ", x, " 1");
+  cmd(`tellraw @a [`, nbt(x), `]`);
+}
+

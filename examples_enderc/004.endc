@@ -1,0 +1,14 @@
+/* 004.endc - Boolean values */
+extern eter my_num;
+
+extern void get_sign()
+{
+  eter neg, pos, sign;
+  
+  neg = (my_num < 0);
+  pos = (my_num > 0);
+  sign = pos - neg;
+  
+  tellraw("@a", "sign of ", my_num, " is ", sign);
+}
+

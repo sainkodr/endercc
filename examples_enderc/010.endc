@@ -1,0 +1,28 @@
+/* 010.endc - Functions! */
+eter factorial(eter x);
+
+extern void main()
+{
+  eter x, y;
+  
+  x = 5;
+  y = factorial(x);
+
+  tellraw("@a", "factorial(", x, ") = ", y);
+}
+
+eter factorial(eter x)
+{
+  eter y;
+  
+  y = 1;
+  
+  while (x > 1)
+  {
+    y *= x;
+    --x;
+  }
+  
+  return y;
+}
+

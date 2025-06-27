@@ -1,0 +1,19 @@
+/* 003.endc - Fibonacci sequence */
+const eter N = 10;
+
+extern void fibonacci()
+{
+  eter a, b, i;
+  
+  a = 1;
+  b = 1;
+  
+  i = N;
+  while (i-- > 0)
+  {
+    tellraw("@a", i, ") ", b);
+    b += a;
+    b >< a;
+  }
+}
+

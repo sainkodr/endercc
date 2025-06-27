@@ -1,0 +1,6 @@
+/* 000.endc - Hello, EnderC! */
+extern void main()
+{
+  tellraw("@a", "Hello, EnderC!");
+}
+

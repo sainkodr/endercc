@@ -1,0 +1,29 @@
+/* 008.endc - Just go already */
+extern void test_goto()
+{
+  goto abc;
+
+def:
+
+  tellraw("@a", "2");
+  
+  goto ghi;
+  
+  tellraw("@a", "unreachable");
+  
+ghi:
+  
+  tellraw("@a", "3");
+  
+  goto jkl;
+  
+abc:
+  
+  tellraw("@a", "1");
+  
+  goto def;
+
+jkl:
+
+}
+

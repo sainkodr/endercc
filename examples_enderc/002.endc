@@ -1,0 +1,20 @@
+/* 002.endc - What if... */
+extern eter num_coins, coins_are_hiden, debt, bankrupt_limit;
+
+extern void how_much()
+{
+  if (num_coins == 0 || coins_are_hiden)
+  {
+    tellraw("@a", "You have no coins or they are hiden.");
+  }
+  else
+  {
+    tellraw("@a", "You have ", num_coins, " coins.");
+  }
+  
+  if (num_coins - debt < bankrupt_limit)
+  {
+    tellraw("@a", "BTW, you are bankrupt.");
+  }
+}
+

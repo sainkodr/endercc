@@ -1,0 +1,23 @@
+/* 006.endc - do-while */
+extern void test_do_while()
+{
+  eter n;
+
+  n = 0;
+  
+  do
+  {
+    tellraw("@a", "print once");
+  }
+  while (n != 0);
+  
+  tellraw("@a", "and then print 5 times");
+  
+  do
+  {
+    tellraw("@a", "n = ", n);
+    ++n;
+  }
+  while (n != 5);
+}
+

@@ -1,0 +1,13 @@
+/* 001.endc - Simple expressions */
+eter x, y, b;
+
+extern void main()
+{
+  x = 2;
+  y = 40 + x;
+  b = 100 + y * x;
+  tellraw("@a", "x = ", x);
+  tellraw("@a", "y = ", y);
+  tellraw("@a", "b = ", b);
+}
+

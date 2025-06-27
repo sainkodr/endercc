@@ -1,0 +1,12 @@
+/* 005.endc - Ternary operator */
+extern eter my_num;
+
+extern void get_sign2()
+{
+  eter sign;
+  
+  sign = (my_num < 0) ? -1 : (my_num > 0) ? 1 : 0;
+  
+  tellraw("@a", "sign of ", my_num, " is ", sign);
+}
+
