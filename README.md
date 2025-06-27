@@ -47,7 +47,7 @@ an MCFunction in Minecraft datapack.
 
 The file extension for EnderC source files is `.endc`.
 
-See [EnderASM Examples](./examples_enderc/).
+See [EnderC Examples](./examples_enderc/).
 
 ## EnderASM Assembler
 
