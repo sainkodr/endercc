@@ -74,6 +74,7 @@ static u32   es_expression_parse_bp(u32 min_bp);
 static void  es_generate_branch(u32 type);
 static void  es_generate_jump(X_Token label_name);
 static void  es_generate_operation(const char *opcode, const char *altcode, i32 stupid_bug);
+static void  ec_generate_unary(const char *format);
 static void  es_instruction_argument(i32 *constant_out, i32 *si_out);
 static i32   es_labels_define(X_Token name);
 static void  es_labels_end_active_ones(void);
@@ -147,7 +148,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.5\n"
+    printf("enderasm 1.0.6\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -232,6 +233,13 @@ i32 main(i32 argc, char *argv[])
     else if (x_accept("mod")) es_generate_operation("%=", NULL,     0);
     else if (x_accept("min")) es_generate_operation("<",  NULL,     0);
     else if (x_accept("max")) es_generate_operation(">",  NULL,     0);
+    else if (x_accept("neg")) ec_generate_unary("scoreboard players operation ? *= #\n");
+    else if (x_accept("abs")) ec_generate_unary("execute if score ? matches ..0 run "
+                                                          "scoreboard players operation ? *= #\n");
+    else if (x_accept("not")) ec_generate_unary("scoreboard players operation ? *= #\n"
+                                                                "scoreboard players remove ? 1\n");
+    else if (x_accept("inc")) ec_generate_unary("scoreboard players add ? 1\n");
+    else if (x_accept("dec")) ec_generate_unary("scoreboard players remove ? 1\n");
     else if (x_accept("jl"))  es_generate_branch(ES_JL);
     else if (x_accept("jle")) es_generate_branch(ES_JLE);
     else if (x_accept("jg"))  es_generate_branch(ES_JG);
@@ -542,6 +550,48 @@ i32 main(i32 argc, char *argv[])
     fclose(stream);
   }
   
+  /*********************************************/
+  /*-------/  CREATE SETUP MCFUNCTION  \-------*/
+  /*********************************************/
+  
+  {
+    static char path[PATH_MAX];
+    
+    FILE *stream;
+    
+    sprintf(path, "%s/_readme.mcfunction", es_output_directory);
+    
+    stream = fopen(path, "wb");
+    
+    if (stream == NULL)
+    {
+      fprintf(stderr, X_BOLD"%s: "X_BRED"error: "X_RESET"%s\n", path, strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+    
+    fprintf(stream, "# _readme.mcfunction\n"
+                    "# Run this function to setup EnderASM/EnderC in your world.\n"
+                    "# You only need to do it once by executing the command:\n"
+                    "#   /function %s_readme\n",
+                    es_mcfunction_prefix);
+    fprintf(stream, "# Or as an alternative you can call this function from the load function:\n"
+                    "#   extern func _readme\n"
+                    "#   eter _readme_once\n"
+                    "#   load:\n"
+                    "#     je load2, _readme_once, 1\n"
+                    "#     call _readme\n"
+                    "#     mov _readme_once, 1\n"
+                    "#   load2:\n"
+                    "#     /* your load implementation */\n"
+                    "# That way it will heppen automatically the first time you open the world.\n"
+                    "scoreboard objectives add %s dummy\n"
+                    "scoreboard players set MINUS_ONE %s -1\n"
+                    "\n",
+                    es_objective_name, es_objective_name);
+    
+    fclose(stream);
+  }
+  
   return 0;
 }
 /*************************************************************************************************/
@@ -835,6 +885,33 @@ void es_generate_operation(const char *opcode, const char *altcode, i32 stupid_b
   fprintf(es_cmdout, " %s %s ", es_objective_name, opcode);
   es_symbol_eternal_print_name(arg2_si);
   fprintf(es_cmdout, " %s\n", es_objective_name);
+  
+  fflush(es_cmdout);
+}
+/*************************************************************************************************/
+void ec_generate_unary(const char *format)
+{
+  i32 arg1_si, i;
+
+  es_instruction_argument(NULL, &arg1_si);
+  x_expect("\n");
+  
+  for (i = 0; format[i] != '\0'; ++i)
+  {
+    /**/ if (format[i] == '?')
+    {
+      es_symbol_eternal_print_name(arg1_si);
+      fprintf(es_cmdout, " %s", es_objective_name);
+    }
+    else if (format[i] == '#')
+    {
+      fprintf(es_cmdout, "MINUS_ONE %s", es_objective_name);
+    }
+    else
+    {
+      fputc(format[i], es_cmdout);
+    }
+  }
   
   fflush(es_cmdout);
 }
