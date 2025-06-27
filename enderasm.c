@@ -148,7 +148,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.6\n"
+    printf("enderasm 1.0.7\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -508,7 +508,8 @@ i32 main(i32 argc, char *argv[])
   
   for (i = 0; i < es_symtab_num; ++i)
   {
-    if ((es_symtab[i].st_flags & ES_SYMF_USED) && !(es_symtab[i].st_flags & ES_SYMF_DEFINED))
+    if ((es_symtab[i].st_flags & ES_SYMF_USED) && !(es_symtab[i].st_flags & ES_SYMF_DEFINED)
+      && !(es_symtab[i].st_flags & ES_SYMF_EXTERN))
     {
       x_msgf(X_FERR, es_symtab[i].st_name, "the symbol is used but never defiend");
     }
