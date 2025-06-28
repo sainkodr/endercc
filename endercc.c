@@ -181,7 +181,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("endercc 1.0.4\n"
+    printf("endercc 1.0.5\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -876,8 +876,8 @@ Ec_Value ec_compile_function_call(Ec_Node n)
   {
     if (x_tokstr(ec_nodes[ni_list].n_token)[0] == ',')
     {
-      ni_arg = ec_nodes[ni_list].n_rhs;
-      ni_list = ec_nodes[ni_list].n_lhs;
+      ni_arg = ec_nodes[ni_list].n_lhs;
+      ni_list = ec_nodes[ni_list].n_rhs;
     }
     else
     {

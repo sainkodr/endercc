@@ -1,0 +1,30 @@
+/* 012.endc - More functions! */
+void foo(eter x);
+void buz(eter a, eter b);
+void fiz(eter a, eter b, eter c);
+
+extern void test_funcs()
+{
+  foo(3);
+  buz(42, 32);
+  fiz(100, 5, 99);
+}
+
+void foo(eter x)
+{
+  tellraw("@a", x);
+}
+
+void buz(eter a, eter b)
+{
+  tellraw("@a", a);
+  tellraw("@a", b);
+}
+
+void fiz(eter a, eter b, eter c)
+{
+  tellraw("@a", a);
+  tellraw("@a", b);
+  tellraw("@a", c);
+}
+
