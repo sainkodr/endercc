@@ -63,6 +63,11 @@ mod  M, M/C
 min  M, M/C
 max  M, M/C
 xchg M, M
+inc  M
+dec  M
+neg  M
+not  M
+abs  M
 jmp  L
 jl   L, M/C, M/C
 jle  L, M/C, M/C
