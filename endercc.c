@@ -86,6 +86,7 @@ enum { EC_FLG_DEFINED = 1, EC_FLG_USED = 2, EC_FLG_EXTERN = 4 };
 /*************************************************************************************************/
 typedef struct Ec_Symbol {
   X_Token st_name;
+  u32 st_scope;
   u16 st_kind;
   u16 st_flags;
   union {
@@ -153,6 +154,8 @@ static u32 ec_local_labels_num;
 /*************************************************************************************************/
 static Ec_Value ec_current_function_return_address;
 /*************************************************************************************************/
+static u32 ec_current_scope;
+/*************************************************************************************************/
 i32 main(i32 argc, char *argv[])
 {
   i32 k;
@@ -178,7 +181,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("endercc 1.0.0\n"
+    printf("endercc 1.0.1\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -364,6 +367,7 @@ u32 ec_compile_declaration(u32 type)
         addr = ec_symtab[fi].st_value.as_func.f_addrbase;
       }
       
+      ++ec_current_scope;
       top = ec_symtab_top;
 
       argnum = 0;
@@ -437,6 +441,7 @@ u32 ec_compile_declaration(u32 type)
       }
       
       ec_symtab_top = top;
+      --ec_current_scope;
     }
     else if (is_constant)
     {
@@ -1021,6 +1026,7 @@ start:
   {
     i32 top;
     
+    ++ec_current_scope;
     top = ec_symtab_top;
   
     while (!x_accept("}"))
@@ -1029,6 +1035,7 @@ start:
     }
     
     ec_symtab_top = top;
+    --ec_current_scope;
   }
   else if (x_verify("}"))
   {
@@ -1571,7 +1578,7 @@ i32 ec_symbols_find(X_Token name)
 {
   i32 i;
   
-  for (i = 1; i <= ec_symtab_top; ++i)
+  for (i = ec_symtab_top; i > 0; --i)
   {
     if (x_equals(ec_symtab[i].st_name, name))
     {
@@ -1602,17 +1609,16 @@ u32 ec_symbols_declare(X_Token name, u16 kind, u16 flags)
   
   if (si >= 0)
   {
-    if (ec_symtab[si].st_kind != kind)
+    if (kind != EC_SYM_FUNCTION && ec_symtab[si].st_scope < ec_current_scope)
     {
-      x_msgf(X_ERR, name, "the symbol's type is changed");
-      x_msgf(X_NOTE, ec_symtab[si].st_name, "previous declaration");
-      exit(EXIT_FAILURE);
+      goto create_symbol;
     }
-    
-    if (ec_symtab[si].st_flags & flags & EC_FLG_DEFINED)
+  
+    if ((ec_symtab[si].st_kind != kind)
+     || (ec_symtab[si].st_flags & flags & EC_FLG_DEFINED))
     {
       x_msgf(X_ERR, name, "symbol redefinition");
-      x_msgf(X_NOTE, ec_symtab[si].st_name, "previous definition");
+      x_msgf(X_NOTE, ec_symtab[si].st_name, "previous declaration");
       exit(EXIT_FAILURE);
     }
     
@@ -1626,6 +1632,7 @@ u32 ec_symbols_declare(X_Token name, u16 kind, u16 flags)
     return si;
   }
   
+create_symbol:
   si = ++ec_symtab_top;
   
   memset(&ec_symtab[si], 0, sizeof(ec_symtab[si]));

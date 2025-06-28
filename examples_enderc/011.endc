@@ -1,0 +1,23 @@
+/* 011.endc - Scope the scopes */
+extern void main()
+{
+  eter x;
+  
+  x = 1;
+  tellraw("@a", "x = ", x);
+  {
+    eter x;
+    
+    x = 2;
+    tellraw("@a", "x = ", x);
+    {
+      eter x;
+      
+      x = 3;
+      tellraw("@a", "x = ", x);
+    }
+    tellraw("@a", "x = ", x);
+  }
+  tellraw("@a", "x = ", x);
+}
+
