@@ -181,7 +181,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("endercc 1.0.2\n"
+    printf("endercc 1.0.4\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -872,12 +872,12 @@ Ec_Value ec_compile_function_call(Ec_Node n)
   
   argaddr.v_kind = EC_VALUE_ADDRESS;
   
-  for (the_last_one = 0; !the_last_one; )
+  for (the_last_one = 0; ni_list != 0 && !the_last_one; )
   {
     if (x_tokstr(ec_nodes[ni_list].n_token)[0] == ',')
     {
       ni_arg = ec_nodes[ni_list].n_rhs;
-      ni_list = ec_nodes[ni_list].n_rhs;
+      ni_list = ec_nodes[ni_list].n_lhs;
     }
     else
     {
@@ -1459,8 +1459,20 @@ u32 ec_expression_parse_bp(u32 min_bp)
       
       if (x_equals_mem(token, 1, "[") || x_equals_mem(token, 1, "("))
       {
-        rhs = ec_expression_parse_bp(0);
-        x_expect((x_tokstr(token)[0] == '(') ? ")" : "]");
+        const char *end;
+        
+        end = (x_tokstr(token)[0] == '(') ? ")" : "]";
+        
+        if (!x_verify(end))
+        {
+          rhs = ec_expression_parse_bp(0);
+        }
+        else
+        {
+          rhs = 0;
+        }
+        
+        x_expect(end);
         lhs = ec_nodes_create_one(token, op->o_type, lhs, rhs);
       }
       else
