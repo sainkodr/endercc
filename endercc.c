@@ -181,7 +181,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("endercc 1.0.1\n"
+    printf("endercc 1.0.2\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -512,13 +512,14 @@ Ec_Value ec_compile_expression(u32 ni)
     {
       u32 is_tellraw;
       Ec_Node arg, list;
-      u32 num_args, the_last_one;
+      u32 num_args, the_last_one, ni_arg, ni_list;
     
       is_tellraw = x_equals_mem(ec_nodes[n.n_lhs].n_token, 7, "tellraw");
     
       fprintf(ec_asmout, "  %s ", is_tellraw ? "tellraw" : "cmd");
       
-      arg = list = ec_nodes[n.n_rhs];
+      ni_list = n.n_rhs;
+      arg = list = ec_nodes[ni_list];
       
       the_last_one = 0;
       num_args = 0;
@@ -527,12 +528,15 @@ Ec_Value ec_compile_expression(u32 ni)
       {
         if (x_tokstr(list.n_token)[0] == ',')
         {
-          arg = ec_nodes[list.n_lhs];
-          list = ec_nodes[list.n_rhs];
+          ni_arg = list.n_lhs;
+          arg = ec_nodes[ni_arg];
+          ni_list = list.n_rhs;
+          list = ec_nodes[ni_list];
         }
         else
         {
           arg = list;
+          ni_arg = ni_list;
           the_last_one = 1;
         }
         
@@ -564,7 +568,11 @@ Ec_Value ec_compile_expression(u32 ni)
         }
         else
         {
-          x_msgf(X_FERR, arg.n_token, "unimplemented intrinsic feature");
+          i64 const_value;
+          
+          const_value = ec_const_expression_evaluate(ni_arg);
+        
+          fprintf(ec_asmout, "%li", const_value);
         }
         
         ++num_args;
