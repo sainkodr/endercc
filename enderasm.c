@@ -148,7 +148,7 @@ i32 main(i32 argc, char *argv[])
   
   if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
   {
-    printf("enderasm 1.0.7\n"
+    printf("enderasm 1.0.8\n"
            "This is free and unencumbered software released into the public domain.\n"
            "For more information, please refer to <https://unlicense.org/>\n\n");
     exit(EXIT_SUCCESS);
@@ -577,14 +577,10 @@ i32 main(i32 argc, char *argv[])
                     es_mcfunction_prefix);
     fprintf(stream, "# Or as an alternative you can call this function from the load function:\n"
                     "#   extern func _readme\n"
-                    "#   eter _readme_once\n"
                     "#   load:\n"
-                    "#     je load2, _readme_once, 1\n"
                     "#     call _readme\n"
-                    "#     mov _readme_once, 1\n"
-                    "#   load2:\n"
-                    "#     /* your load implementation */\n"
-                    "# That way it will heppen automatically the first time you open the world.\n"
+                    "#     /* your load implementation here */\n"
+                    "# That way it will heppen automatically when you open the world.\n"
                     "scoreboard objectives add %s dummy\n"
                     "scoreboard players set MINUS_ONE %s -1\n"
                     "\n",
