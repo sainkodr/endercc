@@ -121,7 +121,7 @@ void bar()
 ```
 
 Both foo and bar refer to x but it's actually two different variables with different addresses.
-But if you use 'extern':
+But if you use `extern`:
 
 ```c
 void foo()
@@ -153,7 +153,7 @@ That's needed to avoid some warnings and errors for functions like `load` and `t
 `eter` stands for "eternal variable", a variable that doesn't loose its value between loads, which
 reflects the semantics of a scoreboard value in Minecraft. You can think about it as a `static`
 variable in C but with even longer lifetime. `eter` variables are used everywhere, including for
-passing function arguments and for returning a value. That affects how recution works. Consider
+passing function arguments and for returning a value. That affects how recurtion works. Consider
 the next function:
 
 ```c
@@ -170,8 +170,8 @@ void foo(eter x)
 
 This function will print a sequence of zeros no matter what positive value you pass in. This is
 because there is only one variable allocated for passing the argument, and each call to foo
-modifies it. The time you get to tellraw x will already be set to zero. Think about it as passing
-arguments through a global variable.
+modifies it. At the time you get to tellraw, x will already be set to zero. Think about it as
+passing arguments through a global variable.
 
 ### cmd
 
